@@ -24,6 +24,8 @@ public class SongsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_songs_list);
 
+        this.setTitle("My Music Player");
+
         recyclerView=findViewById(R.id.songs_list_recycler_view);
         ContentResolver cr = this.getContentResolver();
 
