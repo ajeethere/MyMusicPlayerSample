@@ -1,16 +1,22 @@
 package com.example.mymusicplayersample;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
 import android.widget.SeekBar;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,6 +29,10 @@ public class MainActivity extends AppCompatActivity {
     Uri song;
     Handler handler;
     String songString;
+
+    NotificationCompat.Builder notification;
+
+    String CHANNEL_ID="musicPlayer";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         pausePlay = findViewById(R.id.pause_play);
         seekBar = findViewById(R.id.seekbar);
         songsList = findViewById(R.id.songs_list);
+        showNotification();
 
         handler = new Handler();
         Intent intent = getIntent();
@@ -184,5 +195,23 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         mediaPlayer.stop();
         super.onBackPressed();
+    }
+    public void showNotification(){
+        RemoteViews notificationLayout = new RemoteViews(this.getPackageName(), R.layout.notification_layout);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "my notification", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = this.getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+        notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("My Music Player").setSmallIcon(R.drawable.play)
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .setCustomContentView(notificationLayout)
+                .setAutoCancel(false);
+
+
+        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
+        managerCompat.notify(1, notification.build());
     }
 }
